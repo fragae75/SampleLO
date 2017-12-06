@@ -35,8 +35,7 @@ public class SampleLO {
 	 */
 	public static void main(String[] args) {
         Random rand = new Random();
-//        String API_KEY = "<<< REPLACE WITH valid API key value>>>"; // <-- REPLACE!
-        String API_KEY = "a9693915fac54fba85a646def7b0c42a"; 
+        String API_KEY = "<<< REPLACE WITH valid API key value>>>"; // <-- REPLACE!
         String SERVER = "tcp://liveobjects.orange-business.com:1883";
         String DEVICE_URN = "urn:lo:nsid:sensor:SampleLO001";
 

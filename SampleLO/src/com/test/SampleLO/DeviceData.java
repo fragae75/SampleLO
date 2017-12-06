@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class DeviceData {
+public class DeviceData { 
 	// Stream identifier
 	public String s;
 	// timestamp (ISO8601 format)

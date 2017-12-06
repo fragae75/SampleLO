@@ -12,7 +12,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 
 /*
- * 
+ *  
  * Thread that will subscribe to the sTopicName and display the messages to the console
  * 
  */
