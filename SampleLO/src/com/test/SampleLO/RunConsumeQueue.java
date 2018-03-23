@@ -88,7 +88,7 @@ public class RunConsumeQueue implements Runnable {
             mqttClient.setCallback(new SimpleMqttCallback(mqttClient));
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName("json+bridge"); // selecting mode "Bridge"
+            connOpts.setUserName("payload+bridge"); // selecting mode "Bridge"
             connOpts.setPassword(sAPIKey.toCharArray()); // passing API key value as password
             connOpts.setCleanSession(true);
 

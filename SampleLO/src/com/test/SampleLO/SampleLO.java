@@ -15,16 +15,29 @@ import com.google.gson.Gson;
 public class SampleLO {
 	
 	/*
-	 * doSubscribeElements() : create a thread that subscribe to topics
+	 * doSubscribeDataTopics() : create a thread that subscribe to data topics
 	 */
-	public static void doSubscribeElements(String sTopicName, String sAPIKey, String sServerAddress)
+	public static void doSubscribeDataTopics(String sTopicName, String sAPIKey, String sServerAddress)
 	{
 		Thread t;
 		RunConsumeQueue consumeQueue = new RunConsumeQueue(sTopicName, sAPIKey, sServerAddress);
 
 		t = new Thread(consumeQueue);
 		t.start();
-        System.out.println("Thread : consume Queue");
+        System.out.println("Thread : consume Queue" + sTopicName);
+	}
+	
+	/*
+	 * doSubscribeDeviceTopics() : create a thread that subscribe to device topics
+	 */
+	public static void doSubscribeDeviceTopics(String sTopicName, String sAPIKey, String sServerAddress, String sDeviceUrn)
+	{
+		Thread t;
+		RunConsumeCommands consumeCommands = new RunConsumeCommands(sTopicName, sAPIKey, sServerAddress, sDeviceUrn);
+
+		t = new Thread(consumeCommands);
+		t.start();
+        System.out.println("Thread : consume Commands" + sTopicName);
 	}
 	
 	/*
@@ -35,12 +48,16 @@ public class SampleLO {
 	 */
 	public static void main(String[] args) {
         Random rand = new Random();
-        String API_KEY = "<<< REPLACE WITH valid API key value>>>"; // <-- REPLACE!
+
+        String API_KEY = MyKey.key; // <-- REPLACE by your API key !
         String SERVER = "tcp://liveobjects.orange-business.com:1883";
         String DEVICE_URN = "urn:lo:nsid:sensor:SampleLO001";
 
         // Subscribe to the router : "~event/v1/data/new/#"
-        doSubscribeElements("~event/v1/data/new/#", API_KEY, SERVER);
+        doSubscribeDataTopics("~event/v1/data/new/#", API_KEY, SERVER);
+        
+        // Subscribe to the router : "dev/cmd"
+        doSubscribeDeviceTopics("dev/cmd", API_KEY, SERVER, DEVICE_URN);
         
         // Wait 1 sec to let if subscribe & get the data below
         try {
@@ -102,19 +119,7 @@ public class SampleLO {
             System.out.println("excep " + me);
             me.printStackTrace();
         }
-        
-        System.out.println("Wait 100 sec : still listen to the topic");
 
-        
-        // Wait 100 sec
-        try {
-			Thread.sleep(100000L);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-        System.out.println("End of the program ");
 
 	}
 
