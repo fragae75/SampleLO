@@ -17,5 +17,5 @@ public class DeviceData {
 	public List<String> t;
 	 // Location [latitude, longitude]
 	public Double[] loc;
-	}
+}
 
