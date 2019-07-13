@@ -110,7 +110,7 @@ public class RunConsumeCommands implements Runnable {
 		
 		@Override
 		public void run() {
-	        String APP_ID = sDeviceUuid;
+	        String APP_ID = sDeviceUuid+"_Command";
 //	        String APP_ID = "app:" + UUID.randomUUID().toString();
 
 	        MqttClient mqttClient = null;
@@ -126,14 +126,14 @@ public class RunConsumeCommands implements Runnable {
 	            connOpts.setCleanSession(true);
 
 	            // Connection
-	            System.out.printf("Subscribe as a device - Connecting to broker: %s ...\n", sServerAddress);
+	            System.out.printf("Subscribe as a device - Connecting to broker: %s as %s...\n", sServerAddress, APP_ID);
 	            mqttClient.connect(connOpts);
-	            System.out.println("Subscribe as a device ... connected.");
+	            System.out.println("Subscribe as a device ... connected.\n");
 
 	            // Subscribe to data
 	            System.out.printf("Consuming from device with filter '%s'...\n", sTopicName);
 	            mqttClient.subscribe(sTopicName);
-	            System.out.println("... subscribed.");
+	            System.out.println("... subscribed.\n");
 
 	            synchronized (mqttClient) {
 	                mqttClient.wait();

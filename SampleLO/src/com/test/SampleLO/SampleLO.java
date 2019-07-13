@@ -17,14 +17,14 @@ public class SampleLO {
 	/*
 	 * doSubscribeDataTopics() : create a thread that subscribe to data topics
 	 */
-	public static void doSubscribeDataTopics(String sTopicName, String sAPIKey, String sServerAddress)
+	public static void doSubscribeDataElements(String sTopicName, String sAPIKey, String sServerAddress, String sUserName)
 	{
 		Thread t;
-		RunConsumeQueue consumeQueue = new RunConsumeQueue(sTopicName, sAPIKey, sServerAddress);
+		RunConsumeQueue consumeQueue = new RunConsumeQueue(sTopicName, sAPIKey, sServerAddress, sUserName);
 
 		t = new Thread(consumeQueue);
 		t.start();
-        System.out.println("Thread : consume Queue" + sTopicName);
+        System.out.println("Thread : consume Data on Fifo\n");
 	}
 	
 	/*
@@ -37,13 +37,25 @@ public class SampleLO {
 
 		t = new Thread(consumeCommands);
 		t.start();
-        System.out.println("Thread : consume Commands" + sTopicName);
+        System.out.println("Thread : consume Commands\n" + sTopicName);
 	}
 	
 	/*
+	 * The application does : 
+	 * - Subscribe to Live Objects as an application
+	 * - Subscribe to Live Objects as a device (urn:lo:nsid:sensor:SampleLO001_Command) ready to receive commands from the platform
+	 * - Connect to Live Objects as a device (urn:lo:nsid:sensor:SampleLO001) and send one payload
 	 * 
-	 * Subscribe to the topic : "~event/v1/data/new/#"
-	 * Send a payload to dev/data
+	 * Reminder:
+	 * in order to collect data as an application
+	 * 1) create a Fifo (here testFifo) which will collect and buffer the data, use the portal (or the API) : https://liveobjects.orange-business.com/#/datastore/fifo
+	 * 2) create a route that will bind your source with the Fifo, use the portal (or the API) : https://liveobjects.orange-business.com/#/datastore/routing
+	 * 3) connect your MQTT client to Live Objects with 'application' user name (see RunConsumeQueue.java)
+	 * 
+	 * Note : The 'bridge' user name ('json+bridge' and 'payload+bridge') will be deprecated end 2019. Therefore 
+	 *  the topic : '~event/v1/data/new/#' will no longer be supported
+	 *  
+	 *  
 	 * 
 	 */
 	public static void main(String[] args) {
@@ -52,20 +64,39 @@ public class SampleLO {
         String API_KEY = MyKey.key; // <-- REPLACE by your API key !
         String SERVER = "tcp://liveobjects.orange-business.com:1883";
         String DEVICE_URN = "urn:lo:nsid:sensor:SampleLO001";
+        String MY_FIFO = "testFifo";
+        String MQTT_USER_NAME = "application";
 
-        // Subscribe to the router : "~event/v1/data/new/#"
-        doSubscribeDataTopics("~event/v1/data/new/#", API_KEY, SERVER);
+
+		/*
+		 * the 'bridge' mode will be deprecated end 2019 !!!
+         * Subscribe to the router : "router/~event/v1/data/new/#"
+         * doSubscribeDataElements("router/~event/v1/data/new/#", API_KEY, SERVER, "payload+bridge");
+        */
         
-        // Subscribe to the router : "dev/cmd"
-        doSubscribeDeviceTopics("dev/cmd", API_KEY, SERVER, DEVICE_URN);
-        
-        // Wait 1 sec to let if subscribe & get the data below
+        // To subscribe a fifo : "fifo/" + fifo name
+        doSubscribeDataElements("fifo/" + MY_FIFO, API_KEY, SERVER, MQTT_USER_NAME);
+
+        // Wait 1 sec to let it subscribe & get the data below and make the logs well sequenced :)
         try {
 			Thread.sleep(1000L);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        // Subscribe to the topic : "dev/cmd"
+        doSubscribeDeviceTopics("dev/cmd", API_KEY, SERVER, DEVICE_URN);
+
+        // Wait 1 sec to let it subscribe & get the data below and make the logs well sequenced :)
+        try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        
 
         // *** data to push ***
         DeviceData data = new DeviceData();
